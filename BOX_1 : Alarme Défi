@@ -1,0 +1,66 @@
+int ledPin1 = 5;       //Définition du 'pin' de sortie de la LED
+int ledPin2 = 4;
+int inputPin = 2;     //Définition du 'pin' du capteur de mouvement
+int pinSpeaker = 6;   //Définition du 'pin de sortie du buzzer
+int pirState = LOW;   
+int val = 0;
+int cont = 0;
+
+void setup() {                 //Explique au programme les paramètres généraux
+
+  pinMode(ledPin1, OUTPUT);     //On définit que le 'pin' de la LED est une sortie
+
+  pinMode(ledPin2, OUTPUT);
+
+  pinMode(inputPin, INPUT);    //On définit que le 'pin' du capteur est une entrée
+
+  pinMode(pinSpeaker, OUTPUT); //On précise que le 'pin' du buzzer est une sortie
+}
+
+void joueSon (long duree, int frequence) {
+
+  duree *= 1000;                                 //donnée en millisecondes, multiplier par 1000 pour définir des secondes
+  int period = (1.0 / frequence) * 1000000;
+  long temps_passe = 0;                          //Initialise la variable 'temps_passé'
+
+  while (temps_passe < duree){                  //Création d'une boucle
+
+    digitalWrite(pinSpeaker,HIGH);               //Demande au buzzer de ce mettre en route
+    delayMicroseconds(period / 2);               //Attende de quelques millisecondes
+    digitalWrite(pinSpeaker,LOW);                //Demande au buzzer de s'éteindre
+    delayMicroseconds(period / 2);               //Attente de quelques milliseondes
+    temps_passe = temps_passe + period;          //Indique que la durée d'activité du buzzer à augmanter
+    
+  }
+  
+}
+
+void loop() {                          //Boucle sans fin
+val = digitalRead(inputPin);           //Association de la variable global 'val' a l'etat de notre détecteur de mouvement
+
+  if (val == HIGH) {                  //Si on détecte un mouvement
+    digitalWrite(ledPin1, HIGH);
+    digitalWrite(ledPin2, HIGH);
+    delay(500);
+    digitalWrite(ledPin1, LOW);
+    digitalWrite(ledPin2, LOW);
+    cont++;
+    delay(150);                   
+  }
+  if (cont == 3) {
+  digitalWrite(ledPin1, HIGH);
+  joueSon(300, 200);
+  digitalWrite(ledPin1, LOW);
+  digitalWrite(ledPin2,HIGH);
+  joueSon(300, 500);
+  digitalWrite(ledPin2, LOW);
+  joueSon(300, 700);
+  cont = 0;
+  }
+  else {                               //Si on ne détecte aucun mouvement
+    digitalWrite(ledPin1, LOW);         //Eteindre la LED
+    digitalWrite(ledPin2, LOW);
+    joueSon(0, 0);                     //Ne pas jouer de son
+    delay(300);                        //Attendre 300ms
+  }
+}
