@@ -1,0 +1,47 @@
+int ledPin = 5;       //Définition du 'pin' de sortie de la LED
+int inputPin = 2;     //Définition du 'pin' du capteur de mouvement
+int pinSpeaker = 6;   //Définition du 'pin de sortie du buzzer
+int pirState = LOW;   
+int val = 0;
+
+void setup() {                 //Explique au programme les paramètres généraux
+
+  pinMode(ledPin, OUTPUT);     //On définit que le 'pin' de la LED est une sortie
+
+  pinMode(inputPin, INPUT);    //On définit que le 'pin' du capteur est une entrée
+
+  pinMode(pinSpeaker, OUTPUT); //On précise que le 'pin' du buzzer est une sortie
+}
+
+void joueSon (long duree, int frequence) {
+
+  duree *= 1000;                                 //donnée en millisecondes, multiplier par 1000 pour définir des secondes
+  int period = (1.0 / frequence) * 1000000;
+  long temps_passe = 0;                          //Initialise la variable 'temps_passé'
+
+  while (temps_passe < duree){                  //Création d'une boucle
+
+    digitalWrite(pinSpeaker,HIGH);               //Demande au buzzer de ce mettre en route
+    delayMicroseconds(period / 2);               //Attende de quelques millisecondes
+    digitalWrite(pinSpeaker,LOW);                //Demande au buzzer de s'éteindre
+    delayMicroseconds(period / 2);               //Attente de quelques milliseondes
+    temps_passe = temps_passe + period;          //Indique que la durée d'activité du buzzer à augmanter
+    
+  }
+  
+}
+
+void loop() {                          //Boucle sans fin
+val = digitalRead(inputPin);           //Association de la variable global 'val' a l'etat de notre détecteur de mouvement
+
+  if (val == HIGH) {                  //Si on détecte un mouvement
+    digitalWrite(ledPin, HIGH);        //Allume la LED
+    joueSon(300, 160);                 //Jouer un son pendant 0.3s a 160Hz
+    delay(150);                        //Attendre pendant 150ms
+  }
+  else {                               //Si on ne détecte aucun mouvement
+    digitalWrite(ledPin, LOW);         //Eteindre la LED
+    joueSon(0, 0);                     //Ne pas jouer de son
+    delay(300);                        //Attendre 300ms
+  }
+}
